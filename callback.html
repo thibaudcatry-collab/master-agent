@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; form-action 'none'">
+<title>Bank link code</title>
+<style>
+body{font:16px/1.6 -apple-system,system-ui,sans-serif;max-width:640px;margin:48px auto;padding:0 16px;color:#222;background:#fff}
+#code{font:600 22px/1.4 ui-monospace,Menlo,monospace;word-break:break-all;user-select:all;-webkit-user-select:all;
+  background:#f3f4f6;border:1px solid #d1d5db;border-radius:8px;padding:16px;margin:16px 0}
+button{font:inherit;font-size:18px;padding:10px 24px;border-radius:8px;border:0;background:#0b57d0;color:#fff;cursor:pointer}
+.err{color:#b91c1c}.muted{color:#666;font-size:14px}
+</style>
+</head><body>
+<h1>Bank link code</h1>
+<p id="msg">Paste this code back to Alfred / the terminal.</p>
+<div id="code"></div>
+<p><button id="copy" type="button">Copy</button> <span id="copied" class="muted"></span></p>
+<p class="muted">This page runs only in your browser. The code is not sent anywhere.</p>
+<script>
+(function () {
+  var p = new URLSearchParams(location.search);
+  var code = p.get("code"), err = p.get("error"), desc = p.get("error_description");
+  var box = document.getElementById("code"), msg = document.getElementById("msg"), btn = document.getElementById("copy");
+  if (!code) {
+    msg.className = "err";
+    msg.textContent = err ? "The bank returned an error: " + err + (desc ? " (" + desc + ")" : "") : "No code found in this link.";
+    box.style.display = "none"; btn.style.display = "none";
+    return;
+  }
+  box.textContent = code;
+  btn.onclick = function () {
+    var done = function () { document.getElementById("copied").textContent = "Copied"; };
+    if (navigator.clipboard) { navigator.clipboard.writeText(code).then(done, function () { select(); }); }
+    else { select(); }
+  };
+  function select() {
+    var r = document.createRange(); r.selectNodeContents(box);
+    var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    try { document.execCommand("copy"); document.getElementById("copied").textContent = "Copied"; } catch (e) {}
+  }
+})();
+</script>
+</body></html>
